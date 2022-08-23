@@ -36,7 +36,7 @@ let capsEntries = entries.map((entry) => [
 ]);
 sequelize.models = Object.fromEntries(capsEntries);
 
-const { Instrument, Category, Admin, Cart, Payment,User,Trolley} = sequelize.models;
+const { Instrument, Category, Admin, Cart, Payment,User,Trolley,Transactions,Raiting} = sequelize.models;
 
 Admin.hasMany(Instrument);
 Instrument.belongsTo(Admin);
@@ -47,13 +47,15 @@ User.belongsToMany(Instrument, {
 Instrument.belongsToMany(User, {
   through: "Favorites",
 });
+Transactions.hasOne(User);
+User.belongsTo(Transactions,{
+  onDelete: "cascade",
+  onUpdate: "cascade",
+  hooks: true,
+})
 
-User.belongsToMany(Instrument, {
-  through: "HistoryShop",
-});
-Instrument.belongsToMany(User, {
-  through: "HistoryShop",
-});
+Instrument.hasMany(Raiting)
+Raiting.belongsTo(Instrument)
 
 User.belongsToMany(Instrument, {
   through: Trolley,
@@ -75,13 +77,6 @@ Payment.belongsToMany(Cart, {
 Cart.belongsToMany(Payment, {
   through: "Transaction",
 });
-
-/* User.hasMany(Instrument, {
-  onDelete: "cascade",
-  onUpdate: "cascade",
-  hooks: true,
-});
-Instrument.belongsTo(User); */
 
 module.exports = {
   ...sequelize.models,

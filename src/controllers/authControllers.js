@@ -63,7 +63,41 @@ const controllerLogin = async (req, res) => {
   }
 };
 
+const controllerLoginGoogle = async (req, res) => {
+  const { userName, email } = req.body;
+  
+  try {
+    const user = await User.findOne({ where: { email: email } });
+    const admin = await Admin.findOne({ where: { email: email } });
+
+    if (!user && !admin) {
+      throw new TypeError("User doesn't exist");
+    }
+    
+    if (user) {
+      var token = jwt.sign(
+        { user_id: user.id, user_rol: user.rol },
+        process.env.JWT_SECRET
+      );
+      return res.status(200).json({ token: token });
+    }
+
+    if (admin) {
+      var token = jwt.sign(
+        { user_id: admin.id, user_rol: admin.rol },
+        process.env.JWT_SECRET
+      );
+      return res.status(200).json({ token: token });
+    }
+
+  } catch (error) {
+    return res.status(404).send(error.message);
+  }
+  
+}
+
 module.exports = {
   controllerLogin,
   controllerRegister,
+  controllerLoginGoogle,
 };

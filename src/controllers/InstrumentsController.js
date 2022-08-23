@@ -1,4 +1,4 @@
-const { Instrument, Category } = require("../db.js");
+const { Instrument, Category,Raiting } = require("../db.js");
 const { Op } = require("sequelize");
 
 const postInstrument = async (req, res, next) => {
@@ -64,12 +64,12 @@ const deleteInstrument = async (req, res) => {
   const { id } = req.body;
   try {
     if (id) {
-      const deleteInstrument = await Instrument.destroy({
-        where: { id: id },
-      });
+      const deleteInstrument = await Instrument.findByPk(id);
       if (!deleteInstrument) {
         throw new TypeError("Error, instrument not found with this Id");
       }
+      deleteInstrument.isBanned = true;
+      await deleteInstrument.save();
       res.status(200).send("Instrument deleted");
     } else {
       throw new TypeError("Error, The Id entered is not valid");
@@ -84,7 +84,7 @@ const getIdInstrument = async (req, res) => {
   try {
     if (id) {
       const idInstrument = await Instrument.findByPk(id, {
-        include: { model: Category },
+        include: { model: Category,model:Raiting },
       });
       idInstrument
         ? res.status(200).send(idInstrument)
@@ -95,33 +95,13 @@ const getIdInstrument = async (req, res) => {
   }
 };
 
-const putInstrument = async (req, res, next) => {
+const putInstrument = async (req, res) => {
   try {
-    const {
-      id,
-      name,
-      brand,
-      price,
-      img,
-      description,
-      stock,
-      status,
-      category,
-    } = req.body;
+    const {id,name,brand,price,img,description,stock,status,category,isBanned} = req.body;
 
-    if (
-      !id ||
-      !name ||
-      !brand ||
-      !price ||
-      !img ||
-      !description ||
-      !stock ||
-      !status ||
-      !category
-    )
+    if (!id ||!name ||!brand ||!price ||!img ||!description ||!stock ||!status ||!category|| isBanned===null){
       throw new TypeError("data sent incorrectly");
-
+    }
     let instrument = await Instrument.findByPk(parseInt(id));
     if (!instrument) throw new TypeError("incorrect id");
     await instrument.update({
@@ -132,13 +112,13 @@ const putInstrument = async (req, res, next) => {
       description,
       stock: parseInt(stock),
       status,
+      isBanned
     });
     let newInstrumentCategory = await Category.findOne({
       where: {
         name: category,
       },
     });
-    console.log(newInstrumentCategory);
     if (!newInstrumentCategory)
       throw new TypeError("category sent incorrectly");
     instrument.setCategory(newInstrumentCategory);
@@ -146,7 +126,7 @@ const putInstrument = async (req, res, next) => {
     instrument.save();
     res.status(200).send("successfully edited");
   } catch (error) {
-    next(error);
+    res.status(400).send(error)
   }
 };
 

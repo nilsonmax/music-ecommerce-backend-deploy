@@ -12,8 +12,9 @@ const handler = async (req, res) => {
         mode: "payment",
         payment_method_types: ["card"],
         billing_address_collection: "auto",
-        // shipping_options: [],
-        // { shipping_rate: "shr_1LVzvhBerpNYACotSjDZXifA" },
+        shipping_options: [
+          { shipping_rate: "shr_1LVzvhBerpNYACotSjDZXifA" },
+        ],
         line_items: req.body.map((item) => {
           
           return {
