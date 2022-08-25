@@ -18,14 +18,16 @@ class mailStructure {
   setHtmlRegister(userName, password) {
     this.html = `
     <div>
-            <h1>Welcome to MusiCommerce</h1>
-            <div>
-              <h3>Summary of your information:</h3>
-              <ul>
-                <li>Username: ${userName}</li>
-                <li>Password: ${password}</li>
-              </ul>
-            </div>
+          <div >
+            <h1 style="color:#2B4570">Welcome to MusiCommerce</h1>
+          </div>
+          <div>
+            <h3 style="color:#2B4570">Summary of your information:</h3>
+             <ul>
+               <li><b style="color:#5497A7">Username:</b> ${userName}</li>
+               <li><b style="color:#5497A7">Password:</b> ${password}</li>
+             </ul>
+           </div>
             <a href="https://www.google.com">Ir a Musiccomerce</a>
     </div>`;
   }
@@ -46,7 +48,7 @@ class mailStructure {
     </br>
     </br>
     <div>
-      <h3 style="color:#2B4570">PRODUCTOS</h3>
+      <h3 style="color:#2B4570">PRODUCTS</h3>
       <div>${items.map(
         (e) =>
           `<img src= ${e.img} style= "height:150px" "width=150px"/>
@@ -112,6 +114,17 @@ class mailStructure {
     <h1 style="color:#2B4570">Successful password change</h1>
     <h4>This is your new password: </h4>
     <p>${pass}</p>
+  </div>
+  `;
+  }
+
+  setResetPasswordAdmin(email) {
+    this.html = `
+    <div>
+    <h1 style="color:#2B4570">PASSWORD CHANGE</h1>
+    <h3 style="color:#2B4570" >You have requested a password change from your email ${email}</h3>
+    <h3>Click on the following link:</h3>
+    <p>http://localhost:3000/admin/resetpassword</p>
   </div>
   `;
   }
